@@ -1,62 +1,94 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
 
-const Header = (props) => {
+const StatisticLine = (props) => {
   return (
-    <h1>{props.course}</h1> 
-  )
-} 
+    <tr>{props.text ? props.text:null}:<td>{props.value}</td></tr>
+  );
+};
 
-const Part = (props) => {
-  return ( 
-    <p>
-        {props.part} {props.exercises}
-    </p> 
-  )
-} 
-
-const Content = (props) => {
-  return (
-    <div>
-      <Part part={props.part1} exercises={props.exercises1} />
-      <Part part={props.part2} exercises={props.exercises2} />
-      <Part part={props.part3} exercises={props.exercises3} /> 
-    </div>
-  )
-} 
-
-const Total = (props) => { 
-  return (
-   <p>Number of exercises {props.exercises1 + props.exercises2 + props.exercises3}</p>
-  )
-} 
+const Statistics = (props) => {
+  if (props.good[1] !== 0 || props.neutral[1] !== 0 || props.bad[1] !== 0) {
+    return (
+      <div>
+        <h1>{props.title}</h1>
+        <table>
+          <tbody> 
+            <StatisticLine
+              text={props.good[0]}
+              value={props.good[1]}
+            ></StatisticLine>
+            <StatisticLine
+              text={props.neutral[0]}
+              value={props.neutral[1]}
+            ></StatisticLine>
+            <StatisticLine
+              text={props.bad[0]}
+              value={props.bad[1]}
+            ></StatisticLine>
+            <StatisticLine
+              text={props.all[0]}
+              value={props.bad[1] + props.good[1] + props.neutral[1]}
+            ></StatisticLine>
+            <StatisticLine
+              text={props.average}
+              value={(props.bad[1] + props.good[1] + props.neutral[1]) / 3}
+            ></StatisticLine>
+            <StatisticLine
+              text={props.positive}
+              value={(props.good[1] / 3) * 100 + "%"}
+            ></StatisticLine>
+          </tbody>
+        </table>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h1>{props.title}</h1>
+        <p>{props.hidden}</p>
+      </div>
+    );
+  }
+};
 
 const App = () => {
-  const course = {
-    name: 'Half Stack application development',
-    parts: [
-      {
-        name: 'Fundamentals of React',
-        exercises: 10
-      },
-      {
-        name: 'Using props to pass data',
-        exercises: 7
-      },
-      {
-        name: 'State of a component',
-        exercises: 14
-      }
-    ]
-  }
+  // save clicks of each button to its own state
+  let [good, setGood] = useState(0);
+  let [neutral, setNeutral] = useState(0);
+  let [bad, setBad] = useState(0);
 
+  const comments = {
+    title: "Give Feedback",
+    good: ["Good", good],
+    neutral: ["Neutral", neutral],
+    bad: ["Bad", bad],
+    all: "All",
+    average: "Average",
+    positive: "Positive",
+    statistics: "Statistics",
+    hidden: "No Feedback Given",
+  };
   return (
     <div>
-      <Header course={course.name} />  
-      <Content part1={course.parts[0].name} part2={course.parts[1].name} part3={course.parts[2].name} exercises1={course.parts[0].exercises} exercises2={course.parts[1].exercises} exercises3={course.parts[2].exercises} />
-      <Total exercises1={course.parts[0].exercises} exercises2={course.parts[1].exercises} exercises3={course.parts[2].exercises} />
+      <h1>{comments.title}</h1>
+      <button onClick={() => setGood(good++)}>{comments.good[0]}</button>
+      <button onClick={() => setNeutral(neutral++)}>
+        {comments.neutral[0]}
+      </button>
+      <button onClick={() => setBad(bad++)}>{comments.bad[0]}</button>
+      <Statistics
+        hidden={comments.hidden}
+        title={comments.statistics}
+        good={comments.good}
+        neutral={comments.neutral}
+        bad={comments.bad}
+        all={comments.all}
+        average={comments.average}
+        positive={comments.positive}
+      />
     </div>
-  )
-}
+  );
+};
 
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App />, document.getElementById("root"));
